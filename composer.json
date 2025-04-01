@@ -1,16 +1,16 @@
 {
-    "name": ":vendor_slug/:package_slug",
-    "description": ":package_description",
+    "name": "blitz-php/socialite",
+    "description": "Enveloppe de BlitzPHP autour des bibliothèques OAuth 1 et OAuth 2. Tiré de Laravel",
     "keywords": [
-        ":vendor_name",
-        ":package_slug"
+        "blitz-php",
+        "socialite"
     ],
-    "homepage": "https://github.com/:vendor_slug/:package_slug",
+    "homepage": "https://github.com/blitz-php/socialite",
     "license": "MIT",
     "authors": [
         {
-            "name": ":author_name",
-            "email": "author@domain.com",
+            "name": "Dimitri Sitchet Tomkeu",
+            "email": "devcode.dst@gmail.com",
             "role": "Developer"
         }
     ],
@@ -18,23 +18,34 @@
         "php": "^8.1"
     },
     "require-dev": {
-        :require_dev_testing,
-        :require_dev_codestyle,
+        "kahlan/kahlan": "^6.0",
+        "blitz-php/coding-standard": "^1.4",
 		"phpstan/phpstan": "^2.1"
     },
     "autoload": {
         "psr-4": {
-            "VendorName\\Skeleton\\": "src"
+            "BlitzPHP\\Socialite\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "VendorName\\Skeleton\\Spec\\": "spec"
+            "BlitzPHP\\Socialite\\Spec\\": "spec"
         }
     },
     "scripts": {
-        :scripts_testing,
-        :scripts_codestyle,
+        "test": "vendor/bin/kahlan",
+        "test:cov": [
+            "Composer\\Config::disableProcessTimeout",
+            "vendor/bin/kahlan --coverage=4 --reporter=verbose --clover=clover.xml"
+        ],
+        "cs": [
+            "Composer\\Config::disableProcessTimeout",
+            "php-cs-fixer check --ansi --verbose --diff"
+        ],
+        "cs:fix": [
+            "Composer\\Config::disableProcessTimeout",
+            "vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --allow-risky=yes"
+        ],
 		"phpstan:baseline": [
             "Composer\\Config::disableProcessTimeout",
             "bash -c \"XDEBUG_MODE=off phpstan analyse --ansi --generate-baseline phpstan-baseline.php\""
@@ -54,7 +65,6 @@
     "config": {
         "sort-packages": true,
         "allow-plugins": {
-            :plugins_testing,
             "phpstan/extension-installer": true
         }
     },
