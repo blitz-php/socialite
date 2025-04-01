@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * This file is part of blitz-php/socialite.
+ *
+ * (c) 2025 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 namespace BlitzPHP\Socialite\Two;
 
 class GitlabProvider extends AbstractProvider
@@ -32,7 +41,7 @@ class GitlabProvider extends AbstractProvider
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getAuthUrl(string $state): string
     {
@@ -40,7 +49,7 @@ class GitlabProvider extends AbstractProvider
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getTokenUrl(): string
     {
@@ -48,11 +57,11 @@ class GitlabProvider extends AbstractProvider
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getUserByToken(string $token): array
     {
-        $response = $this->getHttpClient()->get($this->host.'/api/v3/user', [
+        $response = $this->getHttpClient()->get($this->host . '/api/v3/user', [
             'query' => ['access_token' => $token],
         ]);
 
@@ -60,7 +69,7 @@ class GitlabProvider extends AbstractProvider
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function mapUserToObject(array $user): User
     {

@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * This file is part of blitz-php/socialite.
+ *
+ * (c) 2025 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 namespace BlitzPHP\Socialite\Two;
 
 use BlitzPHP\Utilities\Iterable\Arr;
@@ -17,7 +26,7 @@ class LinkedInProvider extends AbstractProvider
     protected string $scopeSeparator = ' ';
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getAuthUrl(string $state): string
     {
@@ -25,7 +34,7 @@ class LinkedInProvider extends AbstractProvider
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getTokenUrl(): string
     {
@@ -33,7 +42,7 @@ class LinkedInProvider extends AbstractProvider
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getUserByToken(string $token): array
     {
@@ -72,7 +81,7 @@ class LinkedInProvider extends AbstractProvider
                 'X-RestLi-Protocol-Version' => '2.0.0',
             ],
             'query' => [
-                'q' => 'members',
+                'q'          => 'members',
                 'projection' => '(elements*(handle~))',
             ],
         ]);
@@ -81,7 +90,7 @@ class LinkedInProvider extends AbstractProvider
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function mapUserToObject(array $user): User
     {
@@ -90,12 +99,8 @@ class LinkedInProvider extends AbstractProvider
         $lastName        = Arr::get($user, 'lastName.localized.' . $preferredLocale);
 
         $images         = (array) Arr::get($user, 'profilePicture.displayImage~.elements', []);
-        $avatar         = Arr::first($images, function ($image) {
-            return $image['data']['com.linkedin.digitalmedia.mediaartifact.StillImage']['storageSize']['width'] === 100;
-        });
-        $originalAvatar = Arr::first($images, function ($image) {
-            return $image['data']['com.linkedin.digitalmedia.mediaartifact.StillImage']['storageSize']['width'] === 800;
-        });
+        $avatar         = Arr::first($images, fn ($image) => $image['data']['com.linkedin.digitalmedia.mediaartifact.StillImage']['storageSize']['width'] === 100);
+        $originalAvatar = Arr::first($images, fn ($image) => $image['data']['com.linkedin.digitalmedia.mediaartifact.StillImage']['storageSize']['width'] === 800);
 
         return (new User())->setRaw($user)->map([
             'id'              => $user['id'],

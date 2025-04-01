@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * This file is part of blitz-php/socialite.
+ *
+ * (c) 2025 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 namespace BlitzPHP\Socialite\Two;
 
 use BlitzPHP\Utilities\Iterable\Arr;
@@ -42,7 +51,7 @@ class FacebookProvider extends AbstractProvider
     protected ?string $lastToken = null;
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getAuthUrl(string $state): string
     {
@@ -50,7 +59,7 @@ class FacebookProvider extends AbstractProvider
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getTokenUrl(): string
     {
@@ -58,7 +67,7 @@ class FacebookProvider extends AbstractProvider
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getAccessTokenResponse(string $code): array
     {
@@ -72,7 +81,7 @@ class FacebookProvider extends AbstractProvider
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getUserByToken(string $token): array
     {
@@ -80,14 +89,14 @@ class FacebookProvider extends AbstractProvider
 
         $params = [
             'access_token' => $token,
-            'fields' => implode(',', $this->fields),
+            'fields'       => implode(',', $this->fields),
         ];
 
         if (! empty($this->clientSecret)) {
             $params['appsecret_proof'] = hash_hmac('sha256', $token, $this->clientSecret);
         }
 
-        $response = $this->getHttpClient()->get($this->graphUrl.'/'.$this->version.'/me', [
+        $response = $this->getHttpClient()->get($this->graphUrl . '/' . $this->version . '/me', [
             'headers' => [
                 'Accept' => 'application/json',
             ],
@@ -98,7 +107,7 @@ class FacebookProvider extends AbstractProvider
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function mapUserToObject(array $user): User
     {
@@ -116,7 +125,7 @@ class FacebookProvider extends AbstractProvider
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getCodeFields(?string $state = null): array
     {

@@ -1,12 +1,20 @@
 <?php
 
+/**
+ * This file is part of blitz-php/socialite.
+ *
+ * (c) 2025 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 namespace BlitzPHP\Socialite\Two;
 
 use BlitzPHP\Contracts\Session\SessionInterface;
 use BlitzPHP\Http\Redirection;
 use BlitzPHP\Http\Request;
 use BlitzPHP\Socialite\Contracts\ProviderInterface;
-use BlitzPHP\Socialite\Two\User;
 use BlitzPHP\Utilities\Iterable\Arr;
 use BlitzPHP\Utilities\String\Text;
 use GuzzleHttp\Client;
@@ -65,7 +73,8 @@ abstract class AbstractProvider implements ProviderInterface
      * Créer une nouvelle instance de fournisseur.
      *
      * @param Request $request
-     * @param  array  $guzzle Les options de configuration personnalisées de Guzzle.
+     * @param array   $guzzle  Les options de configuration personnalisées de Guzzle.
+     *
      * @return void
      */
     public function __construct(protected ServerRequestInterface $request, protected string $clientId, protected string $clientSecret, protected string $redirectUrl, protected array $guzzle = [])
@@ -94,7 +103,7 @@ abstract class AbstractProvider implements ProviderInterface
     abstract protected function mapUserToObject(array $user): User;
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function redirect(): Redirection
     {
@@ -152,7 +161,7 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function user(): User
     {
@@ -167,17 +176,17 @@ abstract class AbstractProvider implements ProviderInterface
         $response = $this->getAccessTokenResponse($this->getCode());
 
         $this->user = $this->mapUserToObject($this->getUserByToken(
-            $token  = Arr::get($response, 'access_token')
+            $token = Arr::get($response, 'access_token')
         ));
 
         return $this->user->setToken($token)
-                    ->setRefreshToken(Arr::get($response, 'refresh_token'))
-                    ->setExpiresIn(Arr::get($response, 'expires_in'))
-                    ->setApprovedScopes(explode($this->scopeSeparator, Arr::get($response, 'scope', '')));
+            ->setRefreshToken(Arr::get($response, 'refresh_token'))
+            ->setExpiresIn(Arr::get($response, 'expires_in'))
+            ->setApprovedScopes(explode($this->scopeSeparator, Arr::get($response, 'scope', '')));
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function userFromToken(string $token): User
     {
@@ -202,7 +211,7 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getAccessTokenResponse(string $code): array
     {
@@ -244,7 +253,7 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function scopes(array|string $scopes): static
     {
@@ -254,7 +263,7 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function setScopes(array|string $scopes): static
     {
@@ -264,7 +273,7 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getScopes(): array
     {
@@ -272,7 +281,7 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function redirectUrl(string $url): static
     {
@@ -294,7 +303,7 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function setHttpClient(Client $client): static
     {
@@ -304,7 +313,7 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function setRequest(ServerRequestInterface $request): static
     {
@@ -330,7 +339,7 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function stateless(): static
     {
@@ -392,7 +401,7 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function with(array $parameters): static
     {
