@@ -1,13 +1,19 @@
 <?php
 
+/**
+ * This file is part of blitz-php/socialite.
+ *
+ * (c) 2025 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 namespace BlitzPHP\Socialite\Two;
 
 use BlitzPHP\Utilities\Iterable\Arr;
 use Exception;
 use GuzzleHttp\RequestOptions;
-
-use function in_array;
-use function json_decode;
 
 class GithubProvider extends AbstractProvider
 {
@@ -17,7 +23,7 @@ class GithubProvider extends AbstractProvider
     protected array $scopes = ['user:email'];
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getAuthUrl(string $state): string
     {
@@ -25,7 +31,7 @@ class GithubProvider extends AbstractProvider
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getTokenUrl(): string
     {
@@ -33,7 +39,7 @@ class GithubProvider extends AbstractProvider
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getUserByToken(string $token): array
     {
@@ -44,9 +50,9 @@ class GithubProvider extends AbstractProvider
             $this->getRequestOptions($token)
         );
 
-        $user = json_decode($response->getBody(), true);
+        $user = \json_decode($response->getBody(), true);
 
-        if (in_array('user:email', $this->scopes)) {
+        if (\in_array('user:email', $this->scopes, true)) {
             $user['email'] = $this->getEmailByToken($token);
         }
 
@@ -69,7 +75,7 @@ class GithubProvider extends AbstractProvider
             return null;
         }
 
-        foreach (json_decode($response->getBody(), true) as $email) {
+        foreach (\json_decode($response->getBody(), true) as $email) {
             if ($email['primary'] && $email['verified']) {
                 return $email['email'];
             }
@@ -79,7 +85,7 @@ class GithubProvider extends AbstractProvider
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function mapUserToObject(array $user): User
     {

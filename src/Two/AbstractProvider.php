@@ -1,12 +1,20 @@
 <?php
 
+/**
+ * This file is part of blitz-php/socialite.
+ *
+ * (c) 2025 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 namespace BlitzPHP\Socialite\Two;
 
 use BlitzPHP\Contracts\Session\SessionInterface;
 use BlitzPHP\Http\Redirection;
 use BlitzPHP\Http\Request;
 use BlitzPHP\Socialite\Contracts\ProviderInterface;
-use BlitzPHP\Socialite\Two\User;
 use BlitzPHP\Utilities\Iterable\Arr;
 use BlitzPHP\Utilities\String\Text;
 use GuzzleHttp\Client;
@@ -66,7 +74,8 @@ abstract class AbstractProvider implements ProviderInterface
      * Créer une nouvelle instance de fournisseur.
      *
      * @param Request $request
-     * @param  array  $guzzle Les options de configuration personnalisées de Guzzle.
+     * @param array   $guzzle  Les options de configuration personnalisées de Guzzle.
+     *
      * @return void
      */
     public function __construct(protected ServerRequestInterface $request, protected string $clientId, protected string $clientSecret, protected string $redirectUrl, protected array $guzzle = [])
@@ -95,7 +104,7 @@ abstract class AbstractProvider implements ProviderInterface
     abstract protected function mapUserToObject(array $user): User;
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function redirect(): Redirection
     {
@@ -153,7 +162,7 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function user(): User
     {
@@ -211,7 +220,7 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getAccessTokenResponse(string $code): array
     {

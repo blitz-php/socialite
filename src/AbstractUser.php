@@ -1,10 +1,18 @@
 <?php
 
+/**
+ * This file is part of blitz-php/socialite.
+ *
+ * (c) 2025 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 namespace BlitzPHP\Socialite;
 
 use BlitzPHP\Socialite\Contracts\UserInterface;
-
-use function array_key_exists;
+use ReturnTypeWillChange;
 
 abstract class AbstractUser implements UserInterface
 {
@@ -44,7 +52,7 @@ abstract class AbstractUser implements UserInterface
     public array $attributes = [];
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getId(): mixed
     {
@@ -52,7 +60,7 @@ abstract class AbstractUser implements UserInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getNickname(): ?string
     {
@@ -60,7 +68,7 @@ abstract class AbstractUser implements UserInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getName(): ?string
     {
@@ -68,7 +76,7 @@ abstract class AbstractUser implements UserInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getEmail(): ?string
     {
@@ -76,7 +84,7 @@ abstract class AbstractUser implements UserInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getAvatar(): ?string
     {
@@ -118,36 +126,36 @@ abstract class AbstractUser implements UserInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function offsetExists($offset)
     {
-        return array_key_exists($offset, $this->user);
+        return \array_key_exists($offset, $this->user);
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->user[$offset];
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         $this->user[$offset] = $value;
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         unset($this->user[$offset]);

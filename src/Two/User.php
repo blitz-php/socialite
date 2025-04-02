@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * This file is part of blitz-php/socialite.
+ *
+ * (c) 2025 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 namespace BlitzPHP\Socialite\Two;
 
 use BlitzPHP\Socialite\AbstractUser;
@@ -22,13 +31,13 @@ class User extends AbstractUser
     public int $expiresIn = -1;
 
     /**
-     * Les champs d'application autorisés par l'utilisateur. 
+     * Les champs d'application autorisés par l'utilisateur.
      * Les champs d'application approuvés peuvent être un sous-ensemble des champs d'application demandés.
      */
     public array $approvedScopes = [];
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function setToken(string $token): static
     {
@@ -38,7 +47,7 @@ class User extends AbstractUser
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function setRefreshToken(string $refreshToken): static
     {
@@ -48,7 +57,7 @@ class User extends AbstractUser
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function setExpiresIn(int $expiresIn): static
     {

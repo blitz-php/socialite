@@ -1,33 +1,31 @@
 <?php
 
 /**
- * --------------------------------------------------------------------------
- * Services de tiers
- * --------------------------------------------------------------------------
+ * This file is part of blitz-php/socialite.
  *
- * Ce fichier sert à stocker les informations d'identification pour les services tiers tels que
- * Github, Facebook, Google et autres. Ce fichier fournit l'emplacement de facto
- * pour ce type d'information, ce qui permet aux paquets d'avoir
- * un fichier conventionnel pour localiser les informations d'identification des différents services.
+ * (c) 2025 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
  */
 
 return [
-    'github'    => [
+    'github' => [
         'client_id'     => '',
         'client_secret' => '',
         'redirect'      => '',
     ],
-    'facebook'  => [
+    'facebook' => [
         'client_id'     => '',
         'client_secret' => '',
         'redirect'      => '',
     ],
-    'google'    => [
+    'google' => [
         'client_id'     => '',
         'client_secret' => '',
         'redirect'      => '',
     ],
-    'linkedin'  => [
+    'linkedin' => [
         'client_id'     => '',
         'client_secret' => '',
         'redirect'      => '',
@@ -37,12 +35,12 @@ return [
         'client_secret' => '',
         'redirect'      => '',
     ],
-    'gitlab'    => [
+    'gitlab' => [
         'client_id'     => '',
         'client_secret' => '',
         'redirect'      => '',
     ],
-    'twitter'   => [
+    'twitter' => [
         'client_id'     => '',
         'client_secret' => '',
         'redirect'      => '',

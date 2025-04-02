@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * This file is part of blitz-php/socialite.
+ *
+ * (c) 2025 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 namespace BlitzPHP\Socialite;
 
 use BlitzPHP\Socialite\Contracts\FactoryInterface;
@@ -23,7 +32,7 @@ class SocialiteManager implements FactoryInterface
 
     /**
      * Le tableau des « pilotes » créés.
-     * 
+     *
      * @var list<ProviderInterface>
      */
     protected array $drivers = [];
@@ -36,20 +45,20 @@ class SocialiteManager implements FactoryInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
-    public function driver(string $driver = null): ProviderInterface
+    public function driver(?string $driver = null): ProviderInterface
     {
         $driver = $driver ?: $this->getDefaultDriver();
 
-        if (is_null($driver)) {
+        if (null === $driver) {
             throw new InvalidArgumentException(sprintf(
-                'Impossible de résoudre le pilote NULL pour [%s].', 
+                'Impossible de résoudre le pilote NULL pour [%s].',
                 static::class
             ));
         }
 
-        // Si le pilote donné n'a pas été créé auparavant, nous créerons l'instance ici et la mettrons en cache afin de pouvoir la renvoyer très rapidement la prochaine fois. 
+        // Si le pilote donné n'a pas été créé auparavant, nous créerons l'instance ici et la mettrons en cache afin de pouvoir la renvoyer très rapidement la prochaine fois.
         // S'il existe déjà un pilote créé sous ce nom, nous retournerons simplement cette instance.
         if (! isset($this->drivers[$driver])) {
             $this->drivers[$driver] = $this->createDriver($driver);
@@ -66,21 +75,21 @@ class SocialiteManager implements FactoryInterface
     protected function createDriver(string $driver): mixed
     {
         // Tout d'abord, nous allons déterminer s'il existe un créateur de pilote personnalisé pour le pilote donné.
-        // Si ce n'est pas le cas, nous rechercherons une méthode de création pour le pilote. 
+        // Si ce n'est pas le cas, nous rechercherons une méthode de création pour le pilote.
         // Les rappels de créateurs personnalisés permettent aux développeurs de créer facilement leurs propres « pilotes » à l'aide de Closures.
         if (isset($this->customCreators[$driver])) {
             return $this->callCustomCreator($driver);
         }
-        
+
         if (method_exists($this, $method = 'create' . ucfirst($driver) . 'Driver')) {
-            return $this->$method();
+            return $this->{$method}();
         }
 
         if (isset($this->config[$driver]) && class_exists($class = __NAMESPACE__ . '\Two\\' . Text::convertTo($driver, 'pascal') . 'Provider')) {
             return $this->buildProvider($class, $this->config[$driver]);
         }
-        
-        throw new InvalidArgumentException("Pilote [$driver] non pris en charge.");
+
+        throw new InvalidArgumentException("Pilote [{$driver}] non pris en charge.");
     }
 
     /**

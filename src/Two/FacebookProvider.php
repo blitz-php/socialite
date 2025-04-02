@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * This file is part of blitz-php/socialite.
+ *
+ * (c) 2025 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 namespace BlitzPHP\Socialite\Two;
 
 use BlitzPHP\Utilities\Helpers;
@@ -49,7 +58,7 @@ class FacebookProvider extends AbstractProvider
     protected ?string $lastToken = null;
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getAuthUrl(string $state): string
     {
@@ -57,7 +66,7 @@ class FacebookProvider extends AbstractProvider
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getTokenUrl(): string
     {
@@ -65,7 +74,7 @@ class FacebookProvider extends AbstractProvider
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getAccessTokenResponse(string $code): array
     {
@@ -79,7 +88,7 @@ class FacebookProvider extends AbstractProvider
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getUserByToken(string $token): array
     {
@@ -160,7 +169,7 @@ class FacebookProvider extends AbstractProvider
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function mapUserToObject(array $user): User
     {
@@ -182,7 +191,7 @@ class FacebookProvider extends AbstractProvider
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getCodeFields(?string $state = null): array
     {

@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * This file is part of blitz-php/socialite.
+ *
+ * (c) 2025 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 namespace BlitzPHP\Socialite\Two;
 
 use BlitzPHP\Utilities\Iterable\Arr;
@@ -61,7 +70,7 @@ class TwitterProvider extends AbstractProvider
      */
     protected function mapUserToObject(array $user): User
     {
-        return (new User)->setRaw($user)->map([
+        return (new User())->setRaw($user)->map([
             'id'       => $user['id'],
             'nickname' => $user['username'],
             'name'     => $user['name'],
