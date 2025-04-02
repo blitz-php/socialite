@@ -25,7 +25,7 @@ class TwitchProvider extends AbstractProvider implements ProviderInterface
     /**
      * {@inheritDoc}
      */
-    protected $scopeSeparator = ' ';
+    protected string $scopeSeparator = ' ';
 
     /**
      * {@inheritDoc}

@@ -52,6 +52,8 @@ class LinkedInOpenIdProvider extends AbstractProvider implements ProviderInterfa
 
     /**
      * Obtient les champs de base du profil de l'utilisateur.
+     *
+     * @return array<string, mixed>
      */
     protected function getBasicProfile(string $token): array
     {

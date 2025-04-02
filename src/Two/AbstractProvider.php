@@ -13,7 +13,6 @@ namespace BlitzPHP\Socialite\Two;
 
 use BlitzPHP\Contracts\Session\SessionInterface;
 use BlitzPHP\Http\Redirection;
-use BlitzPHP\Http\Request;
 use BlitzPHP\Socialite\Contracts\ProviderInterface;
 use BlitzPHP\Utilities\Iterable\Arr;
 use BlitzPHP\Utilities\String\Text;
@@ -30,11 +29,15 @@ abstract class AbstractProvider implements ProviderInterface
 
     /**
      * Les paramètres personnalisés à envoyer avec la requete.
+     *
+     * @var array<string, bool|float|int|string>
      */
     protected array $parameters = [];
 
     /**
      * Les champs d'application demandés.
+     *
+     * @var list<string>
      */
     protected array $scopes = [];
 
@@ -73,8 +76,7 @@ abstract class AbstractProvider implements ProviderInterface
     /**
      * Créer une nouvelle instance de fournisseur.
      *
-     * @param Request $request
-     * @param array   $guzzle  Les options de configuration personnalisées de Guzzle.
+     * @param array<string, mixed> $guzzle Les options de configuration personnalisées de Guzzle.
      *
      * @return void
      */
@@ -95,11 +97,15 @@ abstract class AbstractProvider implements ProviderInterface
 
     /**
      * Obtient l'utilisateur brut pour le jeton d'accès donné.
+     *
+     * @return array<string, mixed>
      */
     abstract protected function getUserByToken(string $token): array;
 
     /**
      * Mappe le tableau d'utilisateurs bruts à une instance d'utilisateur Socialite.
+     *
+     * @param array<string, mixed> $user
      */
     abstract protected function mapUserToObject(array $user): User;
 
@@ -131,6 +137,8 @@ abstract class AbstractProvider implements ProviderInterface
 
     /**
      * Obtient les paramètres GET pour la demande de code.
+     *
+     * @return array<string, bool|float|int|string>
      */
     protected function getCodeFields(?string $state = null): array
     {
@@ -155,6 +163,8 @@ abstract class AbstractProvider implements ProviderInterface
 
     /**
      * Formate les champs d'application donnés.
+     *
+     * @param list<string> $scopes
      */
     protected function formatScopes(array $scopes, string $scopeSeparator): string
     {
@@ -183,6 +193,9 @@ abstract class AbstractProvider implements ProviderInterface
 
     /**
      * Créer une nouvelle instance d'utilisateur à partir des données fournies.
+     *
+     * @param array<string, mixed> $response
+     * @param array<string, mixed> $user
      */
     protected function userInstance(array $response, array $user): User
     {
@@ -216,11 +229,13 @@ abstract class AbstractProvider implements ProviderInterface
         $state = $this->session->get('state');
         $this->session->remove('state');
 
-        return empty($state) || $this->request->query('state') !== $state;
+        return empty($state) || Arr::get($this->request->getQueryParams(), 'state') !== $state;
     }
 
     /**
-     * {@inheritDoc}
+     * Obtient la réponse du jeton d'accès pour le code donné.
+     *
+     * @return array<string, mixed>
      */
     public function getAccessTokenResponse(string $code): array
     {
@@ -234,6 +249,8 @@ abstract class AbstractProvider implements ProviderInterface
 
     /**
      * Obtient les entetes pour la demande de jeton.
+     *
+     * @return array<string, string>
      */
     protected function getTokenHeaders(string $code): array
     {
@@ -242,6 +259,8 @@ abstract class AbstractProvider implements ProviderInterface
 
     /**
      * Obtient les champs POST pour la demande de jeton.
+     *
+     * @return array<string, bool|float|int|string>
      */
     protected function getTokenFields(string $code): array
     {
@@ -278,6 +297,8 @@ abstract class AbstractProvider implements ProviderInterface
 
     /**
      * Obtient la réponse du token de rafraîchissement pour le token de rafraîchissement donné.
+     *
+     * @return array<string, mixed>
      */
     protected function getRefreshTokenResponse(string $refreshToken): array
     {
@@ -297,11 +318,13 @@ abstract class AbstractProvider implements ProviderInterface
      */
     protected function getCode(): string
     {
-        return $this->request->query('code');
+        return Arr::get($this->request->getQueryParams(), 'code');
     }
 
     /**
      * Fusionne les champs d'application de l'accès demandé.
+     *
+     * @param list<string>|string $scopes
      */
     public function scopes(array|string $scopes): static
     {
@@ -312,6 +335,8 @@ abstract class AbstractProvider implements ProviderInterface
 
     /**
      * Définit les champs d'application de l'accès demandé.
+     *
+     * @param list<string>|string $scopes
      */
     public function setScopes(array|string $scopes): static
     {
@@ -322,6 +347,8 @@ abstract class AbstractProvider implements ProviderInterface
 
     /**
      * Obtient les champs d'application actuels.
+     *
+     * @return list<string>
      */
     public function getScopes(): array
     {
@@ -450,6 +477,8 @@ abstract class AbstractProvider implements ProviderInterface
 
     /**
      * Définit les paramètres personnalisés de la requête.
+     *
+     * @param array<string, bool|float|int|string> $parameters
      */
     public function with(array $parameters): static
     {

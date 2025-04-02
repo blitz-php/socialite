@@ -31,6 +31,8 @@ class SocialiteManager implements FactoryInterface
 {
     /**
      * Les créateurs de pilotes personnalisés enregistrés.
+     *
+     * @var array<string, Closure>
      */
     protected array $customCreators = [];
 
@@ -43,6 +45,8 @@ class SocialiteManager implements FactoryInterface
 
     /**
      * Créer une nouvelle instance de gestionnaire.
+     *
+     * @param array<string, array<string, mixed>> $config
      */
     public function __construct(protected array $config)
     {
@@ -97,7 +101,7 @@ class SocialiteManager implements FactoryInterface
     }
 
     /**
-     * Appeler un créateur de pilote personnalisé.
+     * Appelle un créateur de pilote personnalisé.
      */
     protected function callCustomCreator(string $driver): mixed
     {
@@ -105,7 +109,7 @@ class SocialiteManager implements FactoryInterface
     }
 
     /**
-     * Enregistrer un pilote personnalisé.
+     * Enregistre un pilote personnalisé.
      */
     public function extend(string $driver, Closure $callback): static
     {
@@ -116,6 +120,8 @@ class SocialiteManager implements FactoryInterface
 
     /**
      * Obtient tous les « pilotes » créés.
+     *
+     * @return list<ProviderInterface>
      */
     public function getDrivers(): array
     {
@@ -124,6 +130,8 @@ class SocialiteManager implements FactoryInterface
 
     /**
      * Appelle dynamiquement le pilote par défaut.
+     *
+     * @param list<mixed> $arguments
      */
     public function __call(string $method, array $arguments): mixed
     {
@@ -149,7 +157,7 @@ class SocialiteManager implements FactoryInterface
     /**
      * Créer une instance du pilote Gitlab.
      */
-    protected function createGitlabDriver()
+    protected function createGitlabDriver(): AbstractProvider
     {
         /** @var GitlabProvider */
         $provider = $this->buildProvider(GitlabProvider::class, $config = $this->config['gitlab']);
@@ -170,7 +178,7 @@ class SocialiteManager implements FactoryInterface
     /**
      * Créer une instance du pilote X (Ancien Twitter).
      */
-    protected function createXDriver()
+    protected function createXDriver(): AbstractProvider
     {
         $config = $this->config['x'] ?? $this->config['x-oauth-2'];
 
@@ -187,12 +195,14 @@ class SocialiteManager implements FactoryInterface
 
     /**
      * Construit une instance de fournisseur OAuth 2.
+     *
+     * @param array<string, mixed> $config Configuration du fournisseur oauth
      */
     public function buildProvider(string $provider, array $config): AbstractProvider
     {
         $requiredKeys = ['client_id', 'client_secret', 'redirect'];
 
-        $missingKeys = array_diff($requiredKeys, array_keys($config ?? []));
+        $missingKeys = array_diff($requiredKeys, array_keys($config));
 
         if (! empty($missingKeys)) {
             throw DriverMissingConfigurationException::make($provider, $missingKeys);
@@ -209,6 +219,10 @@ class SocialiteManager implements FactoryInterface
 
     /**
      * Formatage de la configuration du serveur.
+     *
+     * @param array<string, mixed> $config Configuration du fournisseur oauth
+     *
+     * @return array<string, mixed>
      */
     public function formatConfig(array $config): array
     {
@@ -221,6 +235,8 @@ class SocialiteManager implements FactoryInterface
 
     /**
      * Formate l'URL de rappel, en résolvant un URI relatif si nécessaire.
+     *
+     * @param array<string, mixed> $config Configuration du fournisseur oauth
      */
     protected function formatRedirectUrl(array $config): string
     {
@@ -246,7 +262,7 @@ class SocialiteManager implements FactoryInterface
      *
      * @throws InvalidArgumentException
      */
-    public function getDefaultDriver(): string
+    public function getDefaultDriver(): ?string
     {
         throw new InvalidArgumentException('Aucun pilote de Socialite n\'a été spécifié.');
     }

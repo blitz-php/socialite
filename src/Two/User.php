@@ -33,6 +33,8 @@ class User extends AbstractUser
     /**
      * Les champs d'application autorisés par l'utilisateur.
      * Les champs d'application approuvés peuvent être un sous-ensemble des champs d'application demandés.
+     *
+     * @var list<string>
      */
     public array $approvedScopes = [];
 
@@ -68,6 +70,8 @@ class User extends AbstractUser
 
     /**
      * Définit les champs d'application approuvés par l'utilisateur lors de l'authentification.
+     *
+     * @param list<string> $approvedScopes
      */
     public function setApprovedScopes(array $approvedScopes): static
     {

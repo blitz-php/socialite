@@ -43,11 +43,15 @@ abstract class AbstractUser implements UserInterface
 
     /**
      * Attributs bruts de l'utilisateur.
+     *
+     * @var array<string, mixed>
      */
     public array $user = [];
 
     /**
      * Autres attributs de l'utilisateur.
+     *
+     * @var array<string, mixed>
      */
     public array $attributes = [];
 
@@ -93,6 +97,8 @@ abstract class AbstractUser implements UserInterface
 
     /**
      * Récupère le tableau des utilisateurs bruts.
+     *
+     * @return array<string, mixed>
      */
     public function getRaw(): array
     {
@@ -101,6 +107,8 @@ abstract class AbstractUser implements UserInterface
 
     /**
      * Définit le tableau des utilisateurs bruts du fournisseur.
+     *
+     * @param array<string, mixed> $user
      */
     public function setRaw(array $user): static
     {
@@ -111,6 +119,8 @@ abstract class AbstractUser implements UserInterface
 
     /**
      * Mappe le tableau donné sur les propriétés de l'utilisateur.
+     *
+     * @param array<string, mixed> $attributes
      */
     public function map(array $attributes): static
     {

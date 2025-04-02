@@ -30,6 +30,8 @@ class Socialite
 {
     /**
      * Socialite facade service instance.
+     *
+     * @param list<mixed> $arguments
      */
     public static function __callStatic(string $method, array $arguments): mixed
     {

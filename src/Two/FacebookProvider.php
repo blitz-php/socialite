@@ -34,6 +34,8 @@ class FacebookProvider extends AbstractProvider
 
     /**
      * Les champs de l'utilisateur demandés.
+     *
+     * @var list<string>
      */
     protected array $fields = ['name', 'email', 'gender', 'verified', 'link'];
 
@@ -100,6 +102,8 @@ class FacebookProvider extends AbstractProvider
 
     /**
      * Obtient un utilisateur sur la base du jeton OIDC.
+     *
+     * @return array<string, mixed>|null
      */
     protected function getUserByOIDCToken(string $token): ?array
     {
@@ -144,6 +148,8 @@ class FacebookProvider extends AbstractProvider
 
     /**
      * Obtient l'utilisateur en fonction du token d'accès.
+     *
+     * @return array<string, mixed>
      */
     protected function getUserFromAccessToken(string $token): array
     {
@@ -208,6 +214,8 @@ class FacebookProvider extends AbstractProvider
 
     /**
      * Définit les champs utilisateur à demander à Facebook.
+     *
+     * @param list<string> $fields
      */
     public function fields(array $fields): static
     {
@@ -219,7 +227,7 @@ class FacebookProvider extends AbstractProvider
     /**
      * Permet d'afficher la boîte de dialogue sous la forme d'une fenêtre contextuelle.
      */
-    public function asPopup()
+    public function asPopup(): static
     {
         $this->popup = true;
 

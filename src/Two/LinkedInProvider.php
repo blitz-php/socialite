@@ -55,6 +55,8 @@ class LinkedInProvider extends AbstractProvider
 
     /**
      * Obtient les champs du profil de base de l'utilisateur.
+     *
+     * @return array<string, mixed>
      */
     protected function getBasicProfile(string $token): array
     {
@@ -79,6 +81,8 @@ class LinkedInProvider extends AbstractProvider
 
     /**
      * Obtient l'adresse électronique de l'utilisateur.
+     *
+     * @return array<string, mixed>
      */
     protected function getEmailAddress(string $token): array
     {
