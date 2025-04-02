@@ -31,7 +31,7 @@
         "firebase/php-jwt": "^6.4",
         "kahlan/kahlan": "^6.0",
         "phpseclib/phpseclib": "^3.0",
-        "phpstan/phpstan": "^1.11"
+        "phpstan/phpstan": "^2.1"
     },
     "autoload": {
         "psr-4": {
