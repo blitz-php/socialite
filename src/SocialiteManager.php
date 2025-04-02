@@ -16,7 +16,11 @@ use BlitzPHP\Socialite\Contracts\ProviderInterface;
 use BlitzPHP\Socialite\Exceptions\DriverMissingConfigurationException;
 use BlitzPHP\Socialite\Two\AbstractProvider;
 use BlitzPHP\Socialite\Two\GitlabProvider;
+use BlitzPHP\Socialite\Two\LinkedInOpenIdProvider;
 use BlitzPHP\Socialite\Two\LinkedInProvider;
+use BlitzPHP\Socialite\Two\SlackOpenIdProvider;
+use BlitzPHP\Socialite\Two\TwitterProvider;
+use BlitzPHP\Socialite\Two\XProvider;
 use BlitzPHP\Utilities\Helpers;
 use BlitzPHP\Utilities\Iterable\Arr;
 use BlitzPHP\Utilities\String\Text;
@@ -135,6 +139,14 @@ class SocialiteManager implements FactoryInterface
     }
 
     /**
+     * Créer une instance du pilote LinkedIn.
+     */
+    protected function createLinkedinOpenidDriver(): AbstractProvider
+    {
+        return $this->buildProvider(LinkedInOpenIdProvider::class, $this->config['linkedin-openid']);
+    }
+
+    /**
      * Créer une instance du pilote Gitlab.
      */
     protected function createGitlabDriver()
@@ -143,6 +155,34 @@ class SocialiteManager implements FactoryInterface
         $provider = $this->buildProvider(GitlabProvider::class, $config = $this->config['gitlab']);
 
         return $provider->setHost($config['host'] ?? null);
+    }
+
+    /**
+     * Créer une instance du pilote Twitter.
+     */
+    protected function createTwitterDriver(): AbstractProvider
+    {
+        $config = $this->config['twitter'] ?? $this->config['twitter-oauth-2'];
+
+        return $this->buildProvider(TwitterProvider::class, $config);
+    }
+
+    /**
+     * Créer une instance du pilote X (Ancien Twitter).
+     */
+    protected function createXDriver()
+    {
+        $config = $this->config['x'] ?? $this->config['x-oauth-2'];
+
+        return $this->buildProvider(XProvider::class, $config);
+    }
+
+    /**
+     * Créer une instance du pilote Slack (OpenID).
+     */
+    protected function createSlackOpenidDriver(): AbstractProvider
+    {
+        return $this->buildProvider(SlackOpenIdProvider::class, $this->config['slack-openid']);
     }
 
     /**
