@@ -3,6 +3,7 @@
 namespace BlitzPHP\Socialite\Two;
 
 use BlitzPHP\Utilities\Iterable\Arr;
+use GuzzleHttp\RequestOptions;
 
 class TwitterProvider extends AbstractProvider
 {
@@ -20,6 +21,11 @@ class TwitterProvider extends AbstractProvider
      * {@inheritDoc}
      */
     protected string $scopeSeparator = ' ';
+
+    /**
+     * {@inheritDoc}
+     */
+    protected int $encodingType = PHP_QUERY_RFC3986;
 
     /**
      * {@inheritdoc}
@@ -43,8 +49,8 @@ class TwitterProvider extends AbstractProvider
     protected function getUserByToken(string $token): array
     {
         $response = $this->getHttpClient()->get('https://api.twitter.com/2/users/me', [
-            'headers' => ['Authorization' => 'Bearer '.$token],
-            'query' => ['user.fields' => 'profile_image_url'],
+            RequestOptions::HEADERS => ['Authorization' => 'Bearer '.$token],
+            RequestOptions::QUERY   => ['user.fields' => 'profile_image_url'],
         ]);
 
         return Arr::get(json_decode($response->getBody(), true), 'data');
@@ -69,11 +75,43 @@ class TwitterProvider extends AbstractProvider
     public function getAccessTokenResponse(string $code): array
     {
         $response = $this->getHttpClient()->post($this->getTokenUrl(), [
-            'headers'     => ['Accept' => 'application/json'],
-            'auth'        => [$this->clientId, $this->clientSecret],
-            'form_params' => $this->getTokenFields($code),
+            RequestOptions::HEADERS     => ['Accept' => 'application/json'],
+            RequestOptions::AUTH        => [$this->clientId, $this->clientSecret],
+            RequestOptions::FORM_PARAMS => $this->getTokenFields($code),
         ]);
 
         return json_decode($response->getBody(), true);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getRefreshTokenResponse(string $refreshToken): array
+    {
+        $response = $this->getHttpClient()->post($this->getTokenUrl(), [
+            RequestOptions::HEADERS     => ['Accept' => 'application/json'],
+            RequestOptions::AUTH        => [$this->clientId, $this->clientSecret],
+            RequestOptions::FORM_PARAMS => [
+                'grant_type'    => 'refresh_token',
+                'refresh_token' => $refreshToken,
+                'client_id'     => $this->clientId,
+            ],
+        ]);
+
+        return json_decode($response->getBody(), true);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getCodeFields(?string $state = null): array
+    {
+        $fields = parent::getCodeFields($state);
+
+        if ($this->isStateless()) {
+            $fields['state'] = 'state';
+        }
+
+        return $fields;
     }
 }

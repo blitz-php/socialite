@@ -4,6 +4,7 @@ namespace BlitzPHP\Socialite\Two;
 
 use BlitzPHP\Utilities\Iterable\Arr;
 use Exception;
+use GuzzleHttp\RequestOptions;
 
 class BitbucketProvider extends AbstractProvider
 {
@@ -39,12 +40,12 @@ class BitbucketProvider extends AbstractProvider
     protected function getUserByToken(string $token): array
     {
         $response = $this->getHttpClient()->get('https://api.bitbucket.org/2.0/user', [
-            'query' => ['access_token' => $token],
+            RequestOptions::QUERY => ['access_token' => $token],
         ]);
 
         $user = json_decode($response->getBody(), true);
 
-        if (in_array('email', $this->scopes)) {
+        if (in_array('email', $this->scopes, true)) {
             $user['email'] = $this->getEmailByToken($token);
         }
 
@@ -95,9 +96,9 @@ class BitbucketProvider extends AbstractProvider
     public function getAccessToken(string $code): string
     {
         $response = $this->getHttpClient()->post($this->getTokenUrl(), [
-            'auth'        => [$this->clientId, $this->clientSecret],
-            'headers'     => ['Accept' => 'application/json'],
-            'form_params' => $this->getTokenFields($code),
+            RequestOptions::AUTH        => [$this->clientId, $this->clientSecret],
+            RequestOptions::HEADERS     => ['Accept' => 'application/json'],
+            RequestOptions::FORM_PARAMS => $this->getTokenFields($code),
         ]);
 
         return json_decode($response->getBody(), true)['access_token'];

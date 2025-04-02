@@ -10,6 +10,7 @@ use BlitzPHP\Socialite\Two\User;
 use BlitzPHP\Utilities\Iterable\Arr;
 use BlitzPHP\Utilities\String\Text;
 use GuzzleHttp\Client;
+use GuzzleHttp\RequestOptions;
 use Psr\Http\Message\ServerRequestInterface;
 
 abstract class AbstractProvider implements ProviderInterface
@@ -166,18 +167,26 @@ abstract class AbstractProvider implements ProviderInterface
 
         $response = $this->getAccessTokenResponse($this->getCode());
 
-        $this->user = $this->mapUserToObject($this->getUserByToken(
-            $token  = Arr::get($response, 'access_token')
-        ));
+        $user = $this->getUserByToken(Arr::get($response, 'access_token'));
 
-        return $this->user->setToken($token)
-                    ->setRefreshToken(Arr::get($response, 'refresh_token'))
-                    ->setExpiresIn(Arr::get($response, 'expires_in'))
-                    ->setApprovedScopes(explode($this->scopeSeparator, Arr::get($response, 'scope', '')));
+        return $this->userInstance($response, $user);
     }
 
     /**
-     * {@inheritdoc}
+     * Créer une nouvelle instance d'utilisateur à partir des données fournies.
+     */
+    protected function userInstance(array $response, array $user): User
+    {
+        $this->user = $this->mapUserToObject($user);
+
+        return $this->user->setToken(Arr::get($response, 'access_token'))
+            ->setRefreshToken(Arr::get($response, 'refresh_token'))
+            ->setExpiresIn(Arr::get($response, 'expires_in'))
+            ->setApprovedScopes(explode($this->scopeSeparator, Arr::get($response, 'scope', '')));
+    }
+
+    /**
+     * Obtient une instance d'utilisateur social à partir d'un token d'accès connu.
      */
     public function userFromToken(string $token): User
     {
@@ -207,11 +216,19 @@ abstract class AbstractProvider implements ProviderInterface
     public function getAccessTokenResponse(string $code): array
     {
         $response = $this->getHttpClient()->post($this->getTokenUrl(), [
-            'headers'     => ['Accept' => 'application/json'],
-            'form_params' => $this->getTokenFields($code),
+            RequestOptions::HEADERS     => $this->getTokenHeaders($code),
+            RequestOptions::FORM_PARAMS => $this->getTokenFields($code),
         ]);
 
         return json_decode($response->getBody(), true);
+    }
+
+    /**
+     * Obtient les entetes pour la demande de jeton.
+     */
+    protected function getTokenHeaders(string $code): array
+    {
+        return ['Accept' => 'application/json'];
     }
 
     /**
@@ -232,7 +249,38 @@ abstract class AbstractProvider implements ProviderInterface
             $this->session->remove('code_verifier');
         }
 
-        return $fields;
+        return array_merge($fields, $this->parameters);
+    }
+
+    /**
+     * Refresh a user's access token with a refresh token.
+     */
+    public function refreshToken(string $refreshToken): Token
+    {
+        $response = $this->getRefreshTokenResponse($refreshToken);
+
+        return new Token(
+            Arr::get($response, 'access_token'),
+            Arr::get($response, 'refresh_token'),
+            Arr::get($response, 'expires_in'),
+            explode($this->scopeSeparator, Arr::get($response, 'scope', ''))
+        );
+    }
+
+    /**
+     * Obtient la réponse du token de rafraîchissement pour le token de rafraîchissement donné.
+     */
+    protected function getRefreshTokenResponse(string $refreshToken): array
+    {
+        return json_decode($this->getHttpClient()->post($this->getTokenUrl(), [
+            RequestOptions::HEADERS     => ['Accept' => 'application/json'],
+            RequestOptions::FORM_PARAMS => [
+                'grant_type'    => 'refresh_token',
+                'refresh_token' => $refreshToken,
+                'client_id'     => $this->clientId,
+                'client_secret' => $this->clientSecret,
+            ],
+        ])->getBody(), true);
     }
 
     /**
@@ -244,27 +292,27 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Fusionne les champs d'application de l'accès demandé.
      */
     public function scopes(array|string $scopes): static
     {
-        $this->scopes = array_unique(array_merge($this->scopes, (array) $scopes));
+        $this->scopes = array_values(array_unique(array_merge($this->scopes, (array) $scopes)));
 
         return $this;
     }
 
     /**
-     * {@inheritdoc}
+     * Définit les champs d'application de l'accès demandé.
      */
     public function setScopes(array|string $scopes): static
     {
-        $this->scopes = array_unique((array) $scopes);
+        $this->scopes = array_values(array_unique((array) $scopes));
 
         return $this;
     }
 
     /**
-     * {@inheritdoc}
+     * Obtient les champs d'application actuels.
      */
     public function getScopes(): array
     {
@@ -272,7 +320,7 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Définit l'URL de redirection.
      */
     public function redirectUrl(string $url): static
     {
@@ -294,7 +342,7 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Définit l'instance du client HTTP Guzzle.
      */
     public function setHttpClient(Client $client): static
     {
@@ -304,7 +352,7 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Définit l'instance de la requête.
      */
     public function setRequest(ServerRequestInterface $request): static
     {
@@ -330,7 +378,7 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Indique que le fournisseur doit fonctionner sans état.
      */
     public function stateless(): static
     {
@@ -378,7 +426,7 @@ abstract class AbstractProvider implements ProviderInterface
      */
     protected function getCodeChallenge(): string
     {
-        $hashed = hash('sha256', $this->session->get('code_verifier'));
+        $hashed = hash('sha256', $this->session->get('code_verifier'), true);
 
         return rtrim(strtr(base64_encode($hashed), '+/', '-_'), '=');
     }
@@ -392,7 +440,7 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Définit les paramètres personnalisés de la requête.
      */
     public function with(array $parameters): static
     {

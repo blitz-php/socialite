@@ -23,13 +23,14 @@
         "php": "^8.1",
         "ext-json": "*",
         "blitz-php/utilities": "^1.0",
-        "guzzlehttp/guzzle": "^6.0|^7.0",
-        "league/oauth1-client": "^1.11"
+        "guzzlehttp/guzzle": "^6.0|^7.0"
     },
     "require-dev": {
         "blitz-php/coding-standard": "^1.4",
         "blitz-php/framework": "^0.12",
+        "firebase/php-jwt": "^6.4",
         "kahlan/kahlan": "^6.0",
+        "phpseclib/phpseclib": "^3.0",
         "phpstan/phpstan": "^1.11"
     },
     "autoload": {
@@ -71,6 +72,10 @@
         "cs:fix": "Corrige le style de codage",
 		"phpstan:baseline": "Exécute PHPStan puis transférer toutes les erreurs vers le fichier de baseline",
         "phpstan:check": "Exécute PHPStan avec la prise en charge des identifiants"
+    },
+    "suggest": {
+        "firebase/php-jwt": "Requis pour l'authentication via Facebook",
+        "phpseclib/phpseclib": "Requis pour l'authentication via Facebook"
     },
     "config": {
         "sort-packages": true,

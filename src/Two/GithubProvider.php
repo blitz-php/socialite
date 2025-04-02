@@ -4,6 +4,7 @@ namespace BlitzPHP\Socialite\Two;
 
 use BlitzPHP\Utilities\Iterable\Arr;
 use Exception;
+use GuzzleHttp\RequestOptions;
 
 use function in_array;
 use function json_decode;
@@ -97,7 +98,7 @@ class GithubProvider extends AbstractProvider
     protected function getRequestOptions(string $token): array
     {
         return [
-            'headers' => [
+            RequestOptions::HEADERS => [
                 'Accept'        => 'application/vnd.github.v3+json',
                 'Authorization' => 'token ' . $token,
             ],

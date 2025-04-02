@@ -2,6 +2,8 @@
 
 namespace BlitzPHP\Socialite\Two;
 
+use GuzzleHttp\RequestOptions;
+
 class GitlabProvider extends AbstractProvider
 {
     /**
@@ -53,7 +55,7 @@ class GitlabProvider extends AbstractProvider
     protected function getUserByToken(string $token): array
     {
         $response = $this->getHttpClient()->get($this->host.'/api/v3/user', [
-            'query' => ['access_token' => $token],
+            RequestOptions::QUERY => ['access_token' => $token],
         ]);
 
         return json_decode($response->getBody(), true);

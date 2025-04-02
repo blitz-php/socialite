@@ -4,16 +4,19 @@ namespace BlitzPHP\Socialite\Facades;
 
 use Closure;
 use BlitzPHP\Socialite\Contracts\ProviderInterface;
+use BlitzPHP\Socialite\SocialiteManager;
+use BlitzPHP\Socialite\Two\AbstractProvider;
 
 /**
- * @see \BlitzPHP\Socialite\Contracts\FactoryInterface
- * @see \BlitzPHP\Socialite\Contracts\ProviderInterface
- *
  * @method static ProviderInterface driver(string $driver = null)
- * @method static $this extend($driver, Closure $callback)
- * @method static array getDrivers()
- * @method static string getDefaultDriver()
- * @method static ProviderInterface buildProvider($provider, $config)
+ * @method static AbstractProvider buildProvider(string $provider, array $config)
+ * @method static SocialiteManager extend(string $driver, \Closure $callback)
+ * @method array getScopes()
+ * @method ProviderInterface scopes(array|string $scopes)
+ * @method ProviderInterface setScopes(array|string $scopes)
+ * @method ProviderInterface redirectUrl(string $url)
+ *
+ * @see SocialiteManager
  */
 class Socialite
 {

@@ -4,6 +4,7 @@ namespace BlitzPHP\Socialite;
 
 use BlitzPHP\Socialite\Contracts\FactoryInterface;
 use BlitzPHP\Socialite\Contracts\ProviderInterface;
+use BlitzPHP\Socialite\Exceptions\DriverMissingConfigurationException;
 use BlitzPHP\Socialite\Two\AbstractProvider;
 use BlitzPHP\Socialite\Two\GitlabProvider;
 use BlitzPHP\Socialite\Two\LinkedInProvider;
@@ -91,7 +92,7 @@ class SocialiteManager implements FactoryInterface
     }
 
     /**
-     * {@inheritDoc}
+     * Enregistrer un pilote personnalisé.
      */
     public function extend(string $driver, Closure $callback): static
     {
@@ -101,7 +102,7 @@ class SocialiteManager implements FactoryInterface
     }
 
     /**
-     * {@inheritDoc}
+     * Obtient tous les « pilotes » créés.
      */
     public function getDrivers(): array
     {
@@ -109,7 +110,7 @@ class SocialiteManager implements FactoryInterface
     }
 
     /**
-     * Appeler dynamiquement le pilote par défaut.
+     * Appelle dynamiquement le pilote par défaut.
      */
     public function __call(string $method, array $arguments): mixed
     {
@@ -136,17 +137,25 @@ class SocialiteManager implements FactoryInterface
     }
 
     /**
-     * {@inheritDoc}
+     * Construit une instance de fournisseur OAuth 2.
      */
     public function buildProvider(string $provider, array $config): AbstractProvider
     {
-        return new $provider(
+        $requiredKeys = ['client_id', 'client_secret', 'redirect'];
+
+        $missingKeys = array_diff($requiredKeys, array_keys($config ?? []));
+
+        if (! empty($missingKeys)) {
+            throw DriverMissingConfigurationException::make($provider, $missingKeys);
+        }
+        
+        return (new $provider(
             service('request'),
             $config['client_id'],
             $config['client_secret'],
             $this->formatRedirectUrl($config),
             Arr::get($config, 'guzzle', [])
-        );
+        ))->scopes($config['scopes'] ?? []);
     }
 
     /**
@@ -163,15 +172,13 @@ class SocialiteManager implements FactoryInterface
 
     /**
      * Formate l'URL de rappel, en résolvant un URI relatif si nécessaire.
-     *
-     * @return string
      */
-    protected function formatRedirectUrl(array $config)
+    protected function formatRedirectUrl(array $config): string
     {
         $redirect = Helpers::value($config['redirect']);
 
-        return Text::startsWith($redirect, '/')
-            ? redirect()->to($redirect)
+        return Text::startsWith($redirect ?? '', '/')
+            ? url()->to($redirect)
             : $redirect;
     }
 
@@ -186,7 +193,7 @@ class SocialiteManager implements FactoryInterface
     }
 
     /**
-     * {@inheritDoc}
+     * Obtient le nom du pilote par défaut.
      * 
      * @throws InvalidArgumentException
      */

@@ -16,27 +16,32 @@ abstract class AbstractUser implements UserInterface
     /**
      * Le surnom / nom d'utilisateur de l'utilisateur.
      */
-    public string $nickname;
+    public ?string $nickname = null;
 
     /**
      * Nom complet de l'utilisateur.
      */
-    public string $name;
+    public ?string $name = null;
 
     /**
      * Adresse électronique de l'utilisateur.
      */
-    public string $email;
+    public ?string $email = null;
 
     /**
      * URL de l'image de l'avatar de l'utilisateur.
      */
-    public string $avatar;
+    public ?string $avatar = null;
 
     /**
      * Attributs bruts de l'utilisateur.
      */
-    public array $user;
+    public array $user = [];
+
+    /**
+     * Autres attributs de l'utilisateur.
+     */
+    public array $attributes = [];
 
     /**
      * {@inheritdoc}
@@ -49,45 +54,45 @@ abstract class AbstractUser implements UserInterface
     /**
      * {@inheritdoc}
      */
-    public function getNickname(): string
+    public function getNickname(): ?string
     {
-        return $this->nickname ?? '';
+        return $this->nickname;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getName(): string
+    public function getName(): ?string
     {
-        return $this->name ?? '';
+        return $this->name;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getEmail(): string
+    public function getEmail(): ?string
     {
-        return $this->email ?? '';
+        return $this->email;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getAvatar(): string
+    public function getAvatar(): ?string
     {
-        return $this->avatar ?? '';
+        return $this->avatar;
     }
 
     /**
-     * {@inheritdoc}
+     * Récupère le tableau des utilisateurs bruts.
      */
     public function getRaw(): array
     {
-        return $this->user ?? [];
+        return $this->user;
     }
 
     /**
-     * {@inheritdoc}
+     * Définit le tableau des utilisateurs bruts du fournisseur.
      */
     public function setRaw(array $user): static
     {
@@ -97,12 +102,16 @@ abstract class AbstractUser implements UserInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Mappe le tableau donné sur les propriétés de l'utilisateur.
      */
     public function map(array $attributes): static
     {
+        $this->attributes = $attributes;
+
         foreach ($attributes as $key => $value) {
-            $this->{$key} = $value;
+            if (property_exists($this, $key)) {
+                $this->{$key} = $value;
+            }
         }
 
         return $this;
@@ -142,5 +151,13 @@ abstract class AbstractUser implements UserInterface
     public function offsetUnset($offset)
     {
         unset($this->user[$offset]);
+    }
+
+    /**
+     * Recupere un attribut de l'utilisateur dynamiquement.
+     */
+    public function __get(string $key): mixed
+    {
+        return $this->attributes[$key] ?? null;
     }
 }

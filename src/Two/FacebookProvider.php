@@ -2,7 +2,14 @@
 
 namespace BlitzPHP\Socialite\Two;
 
+use BlitzPHP\Utilities\Helpers;
 use BlitzPHP\Utilities\Iterable\Arr;
+use Exception;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
+use GuzzleHttp\RequestOptions;
+use phpseclib3\Crypt\RSA;
+use phpseclib3\Math\BigInteger;
 
 class FacebookProvider extends AbstractProvider
 {
@@ -63,7 +70,7 @@ class FacebookProvider extends AbstractProvider
     public function getAccessTokenResponse(string $code): array
     {
         $response = $this->getHttpClient()->post($this->getTokenUrl(), [
-            'form_params' => $this->getTokenFields($code),
+            RequestOptions::FORM_PARAMS => $this->getTokenFields($code),
         ]);
 
         $data = json_decode($response->getBody(), true);
@@ -78,9 +85,64 @@ class FacebookProvider extends AbstractProvider
     {
         $this->lastToken = $token;
 
+        return $this->getUserByOIDCToken($token) ??
+               $this->getUserFromAccessToken($token);
+    }
+
+    /**
+     * Obtient un utilisateur sur la base du jeton OIDC.
+     */
+    protected function getUserByOIDCToken(string $token): ?array
+    {
+        $kid = json_decode(base64_decode(explode('.', $token)[0]), true)['kid'] ?? null;
+
+        if ($kid === null) {
+            return null;
+        }
+
+        $data = (array) JWT::decode($token, $this->getPublicKeyOfOIDCToken($kid));
+
+        Helpers::throwIf($data['aud'] !== $this->clientId, new Exception('Le token a une audience incorrecte.'));
+        Helpers::throwIf($data['iss'] !== 'https://www.facebook.com', new Exception('Le token a un émetteur incorrect.'));
+
+        $data['id'] = $data['sub'];
+
+        if (isset($data['given_name'])) {
+            $data['first_name'] = $data['given_name'];
+        }
+
+        if (isset($data['family_name'])) {
+            $data['last_name'] = $data['family_name'];
+        }
+
+        return $data;
+    }
+
+    /**
+     * Obtient la clé publique pour vérifier la signature du jeton OIDC.
+     */
+    protected function getPublicKeyOfOIDCToken(string $kid): Key
+    {
+        $response = $this->getHttpClient()->get('https://limited.facebook.com/.well-known/oauth/openid/jwks/');
+
+        $key = Arr::first(json_decode($response->getBody()->getContents(), true)['keys'], function ($key) use ($kid) {
+            return $key['kid'] === $kid;
+        });
+
+        $key['n'] = new BigInteger(JWT::urlsafeB64Decode($key['n']), 256);
+        $key['e'] = new BigInteger(JWT::urlsafeB64Decode($key['e']), 256);
+
+        return new Key((string) RSA::load($key), 'RS256');
+    }
+
+    /**
+     * Obtient l'utilisateur en fonction du token d'accès.
+     */
+    protected function getUserFromAccessToken(string $token): array
+    {
         $params = [
             'access_token' => $token,
-            'fields' => implode(',', $this->fields),
+            'fields'       => implode(',', $this->fields),
         ];
 
         if (! empty($this->clientSecret)) {
@@ -88,10 +150,10 @@ class FacebookProvider extends AbstractProvider
         }
 
         $response = $this->getHttpClient()->get($this->graphUrl.'/'.$this->version.'/me', [
-            'headers' => [
+            RequestOptions::HEADERS => [
                 'Accept' => 'application/json',
             ],
-            'query' => $params,
+            RequestOptions::QUERY => $params,
         ]);
 
         return json_decode($response->getBody(), true);
@@ -102,15 +164,19 @@ class FacebookProvider extends AbstractProvider
      */
     protected function mapUserToObject(array $user): User
     {
-        $avatarUrl = $this->graphUrl . '/' . $this->version . '/' . $user['id'] . '/picture';
+        if (! isset($user['sub'])) {
+            $avatarUrl = $this->graphUrl.'/'.$this->version.'/'.$user['id'].'/picture';
 
-        return (new User())->setRaw($user)->map([
+            $avatarOriginalUrl = $avatarUrl.'?width=1920';
+        }
+
+        return (new User)->setRaw($user)->map([
             'id'              => $user['id'],
             'nickname'        => null,
             'name'            => $user['name'] ?? null,
             'email'           => $user['email'] ?? null,
-            'avatar'          => $avatarUrl . '?type=normal',
-            'avatar_original' => $avatarUrl . '?width=1920',
+            'avatar'          => $avatarUrl ?? $user['picture'] ?? null,
+            'avatar_original' => $avatarOriginalUrl ?? $user['picture'] ?? null,
             'profileUrl'      => $user['link'] ?? null,
         ]);
     }

@@ -3,6 +3,7 @@
 namespace BlitzPHP\Socialite\Two;
 
 use BlitzPHP\Utilities\Iterable\Arr;
+use GuzzleHttp\RequestOptions;
 
 class LinkedInProvider extends AbstractProvider
 {
@@ -48,13 +49,19 @@ class LinkedInProvider extends AbstractProvider
      */
     protected function getBasicProfile(string $token): array
     {
+        $fields = ['id', 'firstName', 'lastName', 'profilePicture(displayImage~:playableStreams)'];
+
+        if (in_array('r_liteprofile', $this->getScopes())) {
+            array_push($fields, 'vanityName');
+        }
+
         $response = $this->getHttpClient()->get('https://api.linkedin.com/v2/me', [
-            'headers' => [
+            RequestOptions::HEADERS => [
                 'Authorization'             => 'Bearer ' . $token,
                 'X-RestLi-Protocol-Version' => '2.0.0',
             ],
-            'query' => [
-                'projection' => '(id,firstName,lastName,profilePicture(displayImage~:playableStreams))',
+            RequestOptions::QUERY => [
+                'projection' => '('.implode(',', $fields).')',
             ],
         ]);
 
@@ -67,11 +74,11 @@ class LinkedInProvider extends AbstractProvider
     protected function getEmailAddress(string $token): array
     {
         $response = $this->getHttpClient()->get('https://api.linkedin.com/v2/emailAddress', [
-            'headers' => [
+            RequestOptions::HEADERS => [
                 'Authorization'             => 'Bearer ' . $token,
                 'X-RestLi-Protocol-Version' => '2.0.0',
             ],
-            'query' => [
+            RequestOptions::QUERY => [
                 'q' => 'members',
                 'projection' => '(elements*(handle~))',
             ],
@@ -89,17 +96,23 @@ class LinkedInProvider extends AbstractProvider
         $firstName       = Arr::get($user, 'firstName.localized.' . $preferredLocale);
         $lastName        = Arr::get($user, 'lastName.localized.' . $preferredLocale);
 
-        $images         = (array) Arr::get($user, 'profilePicture.displayImage~.elements', []);
-        $avatar         = Arr::first($images, function ($image) {
-            return $image['data']['com.linkedin.digitalmedia.mediaartifact.StillImage']['storageSize']['width'] === 100;
+        $images = (array) Arr::get($user, 'profilePicture.displayImage~.elements', []);
+        $avatar = Arr::first($images, function ($image) {
+            return (
+                $image['data']['com.linkedin.digitalmedia.mediaartifact.StillImage']['storageSize']['width'] ??
+                $image['data']['com.linkedin.digitalmedia.mediaartifact.StillImage']['displaySize']['width']
+            ) === 100;
         });
         $originalAvatar = Arr::first($images, function ($image) {
-            return $image['data']['com.linkedin.digitalmedia.mediaartifact.StillImage']['storageSize']['width'] === 800;
+            return (
+                $image['data']['com.linkedin.digitalmedia.mediaartifact.StillImage']['storageSize']['width'] ??
+                $image['data']['com.linkedin.digitalmedia.mediaartifact.StillImage']['displaySize']['width']
+            ) === 800;
         });
 
-        return (new User())->setRaw($user)->map([
+        return (new User)->setRaw($user)->map([
             'id'              => $user['id'],
-            'nickname'        => '',
+            'nickname'        => null,
             'name'            => $firstName . ' ' . $lastName,
             'first_name'      => $firstName,
             'last_name'       => $lastName,

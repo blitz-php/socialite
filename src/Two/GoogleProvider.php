@@ -3,6 +3,7 @@
 namespace BlitzPHP\Socialite\Two;
 
 use BlitzPHP\Utilities\Iterable\Arr;
+use GuzzleHttp\RequestOptions;
 
 class GoogleProvider extends AbstractProvider
 {
@@ -42,16 +43,31 @@ class GoogleProvider extends AbstractProvider
     protected function getUserByToken(string $token): array
     {
         $response = $this->getHttpClient()->get('https://www.googleapis.com/oauth2/v3/userinfo', [
-            'query'   => [
+            RequestOptions::QUERY => [
                 'prettyPrint' => 'false',
             ],
-            'headers' => [
+            RequestOptions::HEADERS => [
                 'Accept'        => 'application/json',
                 'Authorization' => 'Bearer ' . $token,
             ],
         ]);
 
-        return json_decode($response->getBody(), true);
+        return json_decode((string) $response->getBody(), true);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function refreshToken(string $refreshToken): Token
+    {
+        $response = $this->getRefreshTokenResponse($refreshToken);
+
+        return new Token(
+            Arr::get($response, 'access_token'),
+            Arr::get($response, 'refresh_token', $refreshToken),
+            Arr::get($response, 'expires_in'),
+            explode($this->scopeSeparator, Arr::get($response, 'scope', ''))
+        );
     }
 
     /**
@@ -59,7 +75,7 @@ class GoogleProvider extends AbstractProvider
      */
     protected function mapUserToObject(array $user): User
     {
-        // Deprecated: Fields added to keep backwards compatibility in 4.0. These will be removed in 5.0
+        // Obsolete : Champs ajoutés pour maintenir la compatibilité ascendante dans la version 4.0. Ils seront supprimés dans la version 5.0
         $user['id']             = Arr::get($user, 'sub');
         $user['verified_email'] = Arr::get($user, 'email_verified');
         $user['link']           = Arr::get($user, 'profile');
