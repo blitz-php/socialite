@@ -131,7 +131,7 @@ abstract class AbstractUser implements UserInterface
     #[ReturnTypeWillChange]
     public function offsetExists($offset)
     {
-        return \array_key_exists($offset, $this->user);
+        return array_key_exists($offset, $this->user);
     }
 
     /**

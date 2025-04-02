@@ -197,7 +197,7 @@ class SocialiteManager implements FactoryInterface
         if (! empty($missingKeys)) {
             throw DriverMissingConfigurationException::make($provider, $missingKeys);
         }
-        
+
         return (new $provider(
             service('request'),
             $config['client_id'],
@@ -243,7 +243,7 @@ class SocialiteManager implements FactoryInterface
 
     /**
      * Obtient le nom du pilote par défaut.
-     * 
+     *
      * @throws InvalidArgumentException
      */
     public function getDefaultDriver(): string

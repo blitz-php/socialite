@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * This file is part of blitz-php/socialite.
+ *
+ * (c) 2025 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 namespace BlitzPHP\Socialite\Two;
 
 use BlitzPHP\Socialite\Contracts\ProviderInterface;
@@ -18,7 +27,7 @@ class LinkedInOpenIdProvider extends AbstractProvider implements ProviderInterfa
     protected string $scopeSeparator = ' ';
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getAuthUrl(string $state): string
     {
@@ -26,7 +35,7 @@ class LinkedInOpenIdProvider extends AbstractProvider implements ProviderInterfa
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getTokenUrl(): string
     {
@@ -34,7 +43,7 @@ class LinkedInOpenIdProvider extends AbstractProvider implements ProviderInterfa
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getUserByToken(string $token): array
     {
@@ -48,7 +57,7 @@ class LinkedInOpenIdProvider extends AbstractProvider implements ProviderInterfa
     {
         $response = $this->getHttpClient()->get('https://api.linkedin.com/v2/userinfo', [
             RequestOptions::HEADERS => [
-                'Authorization'             => 'Bearer '.$token,
+                'Authorization'             => 'Bearer ' . $token,
                 'X-RestLi-Protocol-Version' => '2.0.0',
             ],
             RequestOptions::QUERY => [
@@ -60,11 +69,11 @@ class LinkedInOpenIdProvider extends AbstractProvider implements ProviderInterfa
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function mapUserToObject(array $user): User
     {
-        return (new User)->setRaw($user)->map([
+        return (new User())->setRaw($user)->map([
             'id'              => $user['sub'],
             'nickname'        => null,
             'name'            => $user['name'],

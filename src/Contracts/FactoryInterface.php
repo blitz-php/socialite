@@ -11,8 +11,6 @@
 
 namespace BlitzPHP\Socialite\Contracts;
 
-use BlitzPHP\Socialite\Contracts\ProviderInterface;
-
 interface FactoryInterface
 {
     /**

@@ -50,9 +50,9 @@ class GithubProvider extends AbstractProvider
             $this->getRequestOptions($token)
         );
 
-        $user = \json_decode($response->getBody(), true);
+        $user = json_decode($response->getBody(), true);
 
-        if (\in_array('user:email', $this->scopes, true)) {
+        if (in_array('user:email', $this->scopes, true)) {
             $user['email'] = $this->getEmailByToken($token);
         }
 
@@ -75,7 +75,7 @@ class GithubProvider extends AbstractProvider
             return null;
         }
 
-        foreach (\json_decode($response->getBody(), true) as $email) {
+        foreach (json_decode($response->getBody(), true) as $email) {
             if ($email['primary'] && $email['verified']) {
                 return $email['email'];
             }

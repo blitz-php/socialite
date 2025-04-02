@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * This file is part of blitz-php/socialite.
+ *
+ * (c) 2025 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 namespace BlitzPHP\Socialite\Two;
 
 use BlitzPHP\Socialite\Contracts\ProviderInterface;
@@ -29,7 +38,7 @@ class SlackProvider extends AbstractProvider implements ProviderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getAuthUrl(string $state): string
     {
@@ -37,7 +46,7 @@ class SlackProvider extends AbstractProvider implements ProviderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getTokenUrl(): string
     {
@@ -45,23 +54,23 @@ class SlackProvider extends AbstractProvider implements ProviderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getUserByToken(string $token): array
     {
         $response = $this->getHttpClient()->get('https://slack.com/api/users.identity', [
-            RequestOptions::HEADERS => ['Authorization' => 'Bearer '.$token],
+            RequestOptions::HEADERS => ['Authorization' => 'Bearer ' . $token],
         ]);
 
         return json_decode($response->getBody(), true);
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function mapUserToObject(array $user): User
     {
-        return (new User)->setRaw($user)->map([
+        return (new User())->setRaw($user)->map([
             'id'              => Arr::get($user, 'user.id'),
             'name'            => Arr::get($user, 'user.name'),
             'email'           => Arr::get($user, 'user.email'),
@@ -71,14 +80,14 @@ class SlackProvider extends AbstractProvider implements ProviderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getCodeFields(?string $state = null): array
     {
         $fields = parent::getCodeFields($state);
 
         if ($this->scopeKey === 'user_scope') {
-            $fields['scope'] = '';
+            $fields['scope']      = '';
             $fields['user_scope'] = $this->formatScopes($this->scopes, $this->scopeSeparator);
         }
 
@@ -86,7 +95,7 @@ class SlackProvider extends AbstractProvider implements ProviderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getAccessTokenResponse(string $code): array
     {

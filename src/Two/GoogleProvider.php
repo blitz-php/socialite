@@ -65,7 +65,7 @@ class GoogleProvider extends AbstractProvider
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function refreshToken(string $refreshToken): Token
     {

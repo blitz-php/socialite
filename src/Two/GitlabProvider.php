@@ -63,7 +63,7 @@ class GitlabProvider extends AbstractProvider
      */
     protected function getUserByToken(string $token): array
     {
-        $response = $this->getHttpClient()->get($this->host.'/api/v3/user', [
+        $response = $this->getHttpClient()->get($this->host . '/api/v3/user', [
             RequestOptions::QUERY => ['access_token' => $token],
         ]);
 

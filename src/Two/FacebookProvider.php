@@ -103,7 +103,7 @@ class FacebookProvider extends AbstractProvider
      */
     protected function getUserByOIDCToken(string $token): ?array
     {
-        $kid = json_decode(base64_decode(explode('.', $token)[0]), true)['kid'] ?? null;
+        $kid = json_decode(base64_decode(explode('.', $token)[0], true), true)['kid'] ?? null;
 
         if ($kid === null) {
             return null;
@@ -134,9 +134,7 @@ class FacebookProvider extends AbstractProvider
     {
         $response = $this->getHttpClient()->get('https://limited.facebook.com/.well-known/oauth/openid/jwks/');
 
-        $key = Arr::first(json_decode($response->getBody()->getContents(), true)['keys'], function ($key) use ($kid) {
-            return $key['kid'] === $kid;
-        });
+        $key = Arr::first(json_decode($response->getBody()->getContents(), true)['keys'], fn ($key) => $key['kid'] === $kid);
 
         $key['n'] = new BigInteger(JWT::urlsafeB64Decode($key['n']), 256);
         $key['e'] = new BigInteger(JWT::urlsafeB64Decode($key['e']), 256);
@@ -158,7 +156,7 @@ class FacebookProvider extends AbstractProvider
             $params['appsecret_proof'] = hash_hmac('sha256', $token, $this->clientSecret);
         }
 
-        $response = $this->getHttpClient()->get($this->graphUrl.'/'.$this->version.'/me', [
+        $response = $this->getHttpClient()->get($this->graphUrl . '/' . $this->version . '/me', [
             RequestOptions::HEADERS => [
                 'Accept' => 'application/json',
             ],
@@ -174,12 +172,12 @@ class FacebookProvider extends AbstractProvider
     protected function mapUserToObject(array $user): User
     {
         if (! isset($user['sub'])) {
-            $avatarUrl = $this->graphUrl.'/'.$this->version.'/'.$user['id'].'/picture';
+            $avatarUrl = $this->graphUrl . '/' . $this->version . '/' . $user['id'] . '/picture';
 
-            $avatarOriginalUrl = $avatarUrl.'?width=1920';
+            $avatarOriginalUrl = $avatarUrl . '?width=1920';
         }
 
-        return (new User)->setRaw($user)->map([
+        return (new User())->setRaw($user)->map([
             'id'              => $user['id'],
             'nickname'        => null,
             'name'            => $user['name'] ?? null,

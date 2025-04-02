@@ -37,7 +37,7 @@ class TwitterProvider extends AbstractProvider
     protected int $encodingType = PHP_QUERY_RFC3986;
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getAuthUrl(string $state): string
     {
@@ -58,7 +58,7 @@ class TwitterProvider extends AbstractProvider
     protected function getUserByToken(string $token): array
     {
         $response = $this->getHttpClient()->get('https://api.twitter.com/2/users/me', [
-            RequestOptions::HEADERS => ['Authorization' => 'Bearer '.$token],
+            RequestOptions::HEADERS => ['Authorization' => 'Bearer ' . $token],
             RequestOptions::QUERY   => ['user.fields' => 'profile_image_url'],
         ]);
 
@@ -93,7 +93,7 @@ class TwitterProvider extends AbstractProvider
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getRefreshTokenResponse(string $refreshToken): array
     {
@@ -111,7 +111,7 @@ class TwitterProvider extends AbstractProvider
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getCodeFields(?string $state = null): array
     {

@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * This file is part of blitz-php/socialite.
+ *
+ * (c) 2025 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 namespace BlitzPHP\Socialite\Two;
 
 use BlitzPHP\Socialite\Contracts\ProviderInterface;
@@ -19,7 +28,7 @@ class TwitchProvider extends AbstractProvider implements ProviderInterface
     protected $scopeSeparator = ' ';
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getAuthUrl(string $state): string
     {
@@ -27,7 +36,7 @@ class TwitchProvider extends AbstractProvider implements ProviderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getTokenUrl(): string
     {
@@ -35,14 +44,14 @@ class TwitchProvider extends AbstractProvider implements ProviderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getUserByToken(string $token): array
     {
         $response = $this->getHttpClient()->get('https://api.twitch.tv/helix/users', [
             RequestOptions::HEADERS => [
                 'Accept'        => 'application/json',
-                'Authorization' => 'Bearer '.$token,
+                'Authorization' => 'Bearer ' . $token,
                 'Client-ID'     => $this->clientId,
             ],
         ]);
@@ -70,13 +79,13 @@ class TwitchProvider extends AbstractProvider implements ProviderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function mapUserToObject(array $user): User
     {
         $user = $user['data']['0'];
 
-        return (new User)->setRaw($user)->map([
+        return (new User())->setRaw($user)->map([
             'id'       => $user['id'],
             'nickname' => $user['display_name'],
             'name'     => $user['display_name'],
@@ -86,7 +95,7 @@ class TwitchProvider extends AbstractProvider implements ProviderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function refreshToken(string $refreshToken): Token
     {

@@ -12,7 +12,6 @@
 namespace BlitzPHP\Socialite\Contracts;
 
 use BlitzPHP\Http\Redirection;
-use BlitzPHP\Socialite\Contracts\UserInterface;
 
 interface ProviderInterface
 {

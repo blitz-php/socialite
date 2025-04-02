@@ -16,13 +16,13 @@ use BlitzPHP\Socialite\SocialiteManager;
 use BlitzPHP\Socialite\Two\AbstractProvider;
 
 /**
+ * @method static AbstractProvider  buildProvider(string $provider, array $config)
  * @method static ProviderInterface driver(string $driver = null)
- * @method static AbstractProvider buildProvider(string $provider, array $config)
- * @method static SocialiteManager extend(string $driver, \Closure $callback)
- * @method array getScopes()
- * @method ProviderInterface scopes(array|string $scopes)
- * @method ProviderInterface setScopes(array|string $scopes)
- * @method ProviderInterface redirectUrl(string $url)
+ * @method static SocialiteManager  extend(string $driver, \Closure $callback)
+ * @method        array             getScopes()
+ * @method        ProviderInterface redirectUrl(string $url)
+ * @method        ProviderInterface scopes(array|string $scopes)
+ * @method        ProviderInterface setScopes(array|string $scopes)
  *
  * @see SocialiteManager
  */
